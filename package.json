@@ -1,0 +1,27 @@
+{
+  "name": "bubble",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "parcel src/index.html --open",
+    "build": "parcel build src/index.html"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Zenderg/bubble.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Zenderg/bubble/issues"
+  },
+  "homepage": "https://github.com/Zenderg/bubble#readme",
+  "devDependencies": {
+    "parcel-bundler": "^1.12.3"
+  },
+  "dependencies": {
+    "simplex-noise": "^2.4.0",
+    "three": "^0.106.2"
+  }
+}
