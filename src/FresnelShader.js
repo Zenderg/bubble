@@ -20,7 +20,7 @@ THREE.FresnelShader = {
             value: null
         },
         "alpha": { //добавленная униформа для прозрачности
-            value: 0.0625
+            value: 1
         }
 
     },

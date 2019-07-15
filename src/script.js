@@ -117,7 +117,6 @@ function render() {
     renderer.clear();
 
     // перерисовка сферы при каждом кадре
-    scene.remove(sphere);
     const iMax = sphereGeom.vertices.length;
 
     for (let i = 0; i < iMax; i++) {
@@ -134,7 +133,6 @@ function render() {
     sphereGeom.computeVertexNormals();
 
     sphereGeom.verticesNeedUpdate = true;
-    scene.add(sphere);
 
     //следующий кадр
     requestAnimationFrame(render);
@@ -228,14 +226,12 @@ function loadShader(texture) {
 
     uniforms["tCube"].value = texture;
 
-    const planetMaterial = new THREE.ShaderMaterial({
+    return new THREE.ShaderMaterial({
         uniforms: uniforms,
         vertexShader: shader.vertexShader,
         fragmentShader: shader.fragmentShader,
         transparent: true
     });
-
-    return planetMaterial;
 }
 
 function onDocumentMouseMove(event) {
@@ -286,8 +282,7 @@ function initEvents() {
         moveFlag = false;
 
         returnInStartY()
-            .then(
-                result => moveToRight()
+            .then(() => moveToRight()
             );
     });
 
@@ -297,7 +292,7 @@ function initEvents() {
 
         returnInStartY()
             .then(
-                result => moveToLeft()
+                () => moveToLeft()
             );
     });
 
@@ -307,7 +302,7 @@ function initEvents() {
 
         returnInStartX()
             .then(
-                result => parallax = true
+                () => parallax = true
             );
     });
 }
@@ -316,7 +311,7 @@ function returnInStartY() {
     const timerStep = 10;
     const animStep = 0.1;
 
-    return new Promise((resolve, reject) => {
+    return new Promise(resolve => {
         let timer = setInterval(() => {
             if (sphere.position.y.toFixed(1) > 0) {
                 sphere.position.y -= animStep;
@@ -371,7 +366,7 @@ function returnInStartX() {
     const animStep = 0.9;
     moveFlag = true;
 
-    return new Promise((resolve, reject) => {
+    return new Promise(resolve => {
         let timer = setInterval(() => {
             if (!moveFlag) clearInterval(timer);
 
