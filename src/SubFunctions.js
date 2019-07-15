@@ -1,5 +1,11 @@
 import * as THREE from 'three';
-import bgUrl from './sky.jpg';
+import bgUrl from './assets/sky.jpg';
+import nx from './assets/nx.jpg';
+import ny from './assets/ny.jpg';
+import nz from './assets/nz.jpg';
+import px from './assets/px.jpg';
+import py from './assets/py.jpg';
+import pz from './assets/pz.jpg';
 
 export default class SubFunctions {
   constructor(scene, renderer, camera) {
@@ -87,12 +93,12 @@ export default class SubFunctions {
 
   static loadBackground(scene) {
     const urls = [
-      bgUrl, // слева
-      bgUrl, // справа
-      bgUrl, // сверху
-      bgUrl, // снизу
-      bgUrl, // сзади
-      bgUrl, // спереди
+      px, // слева
+      nx, // справа
+      py, // сверху
+      ny, // снизу
+      pz, // сзади
+      nz, // спереди
     ];
     const textureCube = new THREE.CubeTextureLoader().load(urls);
 
