@@ -8,7 +8,7 @@ export default class SubFunctions {
     this.camera = camera;
     this.raycaster = new THREE.Raycaster();
     this.mouse = {x: 0, y: 0};
-    this.bubbleState = 'off';
+    this.cursorOnBubble = false;
     this.intersects = [];
   }
 
@@ -50,36 +50,38 @@ export default class SubFunctions {
 
   bubbleClick(controls) {
     return () => {
-      if (this.intersects.length !== 0 && !controls.bubbleShake) {
-        const intStep = 10; // время, указано в мс
-        const animStep = 0.05;// шаг анимации
+      if (!this.intersects.length || controls.bubbleShake) return false;
 
-        controls.bubbleShake = true;
+      const animControls = {
+        step: {max: 1.5, min: 0.5},
+        noise: {max: 0.4, min: 0.1},
+        intStep: 10,
+        animStep: 0.05
+      };
 
-        const timer = setInterval(() => {
-          if (+controls.step.toFixed(1) !== 1.5) {
-            controls.step += animStep;
-            if (+controls.noiseAmount.toFixed(1) !== 0.4) {
-              controls.noiseAmount += animStep;
-            }
-          } else {
-            clearInterval(timer);
-            let timer2 = setInterval(() => {
-              if (+controls.step.toFixed(1) !== 0.5) {
-                controls.step -= animStep;
-                if (+controls.noiseAmount.toFixed(1) !== 0.1) {
-                  controls.noiseAmount -= animStep;
-                }
-              } else {
-                clearInterval(timer2);
-                controls.bubbleShake = false;
-              }
-            }, intStep);
+      controls.bubbleShake = true;
 
+      const timer = setInterval(() => {
+        if (controls.step < animControls.step.max) {
+          controls.step += animControls.animStep;
+          if (controls.noiseAmount < animControls.noise.max) {
+            controls.noiseAmount += animControls.animStep;
           }
-
-        }, intStep);
-      }
+        } else {
+          clearInterval(timer);
+          let timer2 = setInterval(() => {
+            if (controls.step > animControls.step.min) {
+              controls.step -= animControls.animStep;
+              if (controls.noiseAmount > animControls.noise.min) {
+                controls.noiseAmount -= animControls.animStep;
+              }
+            } else {
+              clearInterval(timer2);
+              controls.bubbleShake = false;
+            }
+          }, animControls.intStep);
+        }
+      }, animControls.intStep);
     };
   }
 
@@ -130,23 +132,16 @@ export default class SubFunctions {
   }
 
   checkIntersects(controls) {
+    if (this.mouse.x === 0 && this.mouse.y === 0) return false;
+
     this.raycaster.setFromCamera(this.mouse, this.camera);
     this.intersects = this.raycaster.intersectObjects(this.scene.children,
         true);
 
-    if (this.intersects.length !== 0 && this.intersects[0].object.name ===
-        'bubble') {
-      if (this.mouse.x !== 0 && this.mouse.y !== 0 && this.bubbleState ===
-          'off') {
-        this.bubbleClick(controls)();
-        this.bubbleState = 'on';
-      }
+    if (this.intersects.length && this.intersects[0].object.name === 'bubble') {
+      if (!this.cursorOnBubble) this.triggerBubbleClickWithCurs(controls);
     } else {
-      if (this.mouse.x !== 0 && this.mouse.y !== 0 && this.bubbleState ===
-          'on') {
-        this.bubbleClick(controls)();
-        this.bubbleState = 'off';
-      }
+      if (this.cursorOnBubble) this.triggerBubbleClickWithCurs(controls);
     }
   }
 
@@ -155,5 +150,10 @@ export default class SubFunctions {
     document.addEventListener('click', this.bubbleClick(controls));
     document.addEventListener('mousemove',
         this.onDocumentMouseMove(sphere, controls));
+  }
+
+  triggerBubbleClickWithCurs(controls) {
+    this.bubbleClick(controls)();
+    this.cursorOnBubble = !this.cursorOnBubble;
   }
 };

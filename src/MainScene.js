@@ -16,18 +16,17 @@ export default class MainScene extends SubFunctions{
     this.simplex = new SimplexNoise();
     this.step = 0;
     this.stats = new Stats();
-    this.controls = new function () {
-      this.noiseAmount = 0.1;
-      this.step = 0.5;
-      this.coef = 20;
-      this.bubbleShake = false;
+    this.controls = {
+      noiseAmount: 0.1,
+      step: 0.5,
+      coef: 20,
+      bubbleShake: false
     };
     this.trash = [];
     this.sphereGeom = null;
   }
 
   init(renderFunc) {
-    console.log(window.innerWidth, window.innerHeight);
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.camera.position.set(0, 0, 90);
 
