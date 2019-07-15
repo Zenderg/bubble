@@ -1,13 +1,18 @@
 import * as THREE from 'three';
 import bgUrl from './sky.jpg';
 
-export default {
-  raycaster: new THREE.Raycaster(),
-  mouse: {x: 0, y: 0},
-  bubbleState: 'off',
-  intersects: [],
+export default class SubFunctions {
+  constructor(scene, renderer, camera) {
+    this.scene = scene;
+    this.renderer = renderer;
+    this.camera = camera;
+    this.raycaster = new THREE.Raycaster();
+    this.mouse = {x: 0, y: 0};
+    this.bubbleState = 'off';
+    this.intersects = [];
+  }
 
-  initTrash: scene => {
+  initTrash() {
     const trash = [];
     const particlesQuantity = 125;// кол-во мусора
 
@@ -25,20 +30,25 @@ export default {
       mesh.position.z = Math.random() * 70;
       mesh.scale.x = mesh.scale.y = mesh.scale.z = Math.random() * 3 + 1;
 
-      scene.add(mesh);
+      this.scene.add(mesh);
       trash.push(mesh);
     }
 
     return trash;
-  },
-  onWindowResize: (renderer, camera) => () => {
-    const containerWidth = window.innerWidth;
-    const containerHeight = window.innerHeight;
-    renderer.setSize(containerWidth, containerHeight);
-    camera.aspect = containerWidth / containerHeight;
-    camera.updateProjectionMatrix();
-  },
-  bubbleClick: function(controls) {
+  }
+
+  onWindowResize() {
+    return () => {
+      const containerWidth = window.innerWidth;
+      const containerHeight = window.innerHeight;
+
+      this.renderer.setSize(containerWidth, containerHeight);
+      this.camera.aspect = containerWidth / containerHeight;
+      this.camera.updateProjectionMatrix();
+    };
+  }
+
+  bubbleClick(controls) {
     return () => {
       if (this.intersects.length !== 0 && !controls.bubbleShake) {
         const intStep = 10; // время, указано в мс
@@ -70,9 +80,10 @@ export default {
 
         }, intStep);
       }
-    }
-  },
-  loadBackground: scene => {
+    };
+  }
+
+  static loadBackground(scene) {
     const urls = [
       bgUrl, // слева
       bgUrl, // справа
@@ -88,8 +99,9 @@ export default {
     scene.background = textureCube;
 
     return textureCube;
-  },
-  loadShader: texture => {
+  }
+
+  static loadShader(texture) {
     const shader = THREE.FresnelShader;
     const uniforms = THREE.UniformsUtils.clone(shader.uniforms);
 
@@ -101,8 +113,9 @@ export default {
       fragmentShader: shader.fragmentShader,
       transparent: true,
     });
-  },
-  onDocumentMouseMove: function(scene, sphere, camera,controls) {
+  }
+
+  onDocumentMouseMove(sphere, controls) {
     return event => {
       const coefEffect = 1;
 
@@ -112,14 +125,17 @@ export default {
       sphere.position.x = -this.mouse.x * coefEffect;
       sphere.position.y = -this.mouse.y * coefEffect;
 
-      this.checkIntersects(scene, camera, controls);
+      this.checkIntersects(controls);
     };
-  },
-  checkIntersects: function(scene, camera, controls) {
-    this.raycaster.setFromCamera(this.mouse, camera);
-    this.intersects = this.raycaster.intersectObjects(scene.children, true);
+  }
 
-    if (this.intersects.length !== 0 && this.intersects[0].object.name === 'bubble') {
+  checkIntersects(controls) {
+    this.raycaster.setFromCamera(this.mouse, this.camera);
+    this.intersects = this.raycaster.intersectObjects(this.scene.children,
+        true);
+
+    if (this.intersects.length !== 0 && this.intersects[0].object.name ===
+        'bubble') {
       if (this.mouse.x !== 0 && this.mouse.y !== 0 && this.bubbleState ===
           'off') {
         this.bubbleClick(controls)();
@@ -132,13 +148,12 @@ export default {
         this.bubbleState = 'off';
       }
     }
-  },
-  initEvents: function(scene, renderer, camera, sphere, controls) {
-    window.addEventListener('resize', this.onWindowResize(renderer, camera),
-        false);
+  }
+
+  initEvents(sphere, controls) {
+    window.addEventListener('resize', this.onWindowResize());
     document.addEventListener('click', this.bubbleClick(controls));
     document.addEventListener('mousemove',
-        this.onDocumentMouseMove(scene, sphere, camera, controls),
-        false);
-  },
+        this.onDocumentMouseMove(sphere, controls));
+  }
 };
