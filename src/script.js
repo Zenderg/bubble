@@ -33,7 +33,7 @@ let parallax = true;
 let moveFlag = false;
 
 // куб для тестирования прозрачности
-let box;
+// let box;
 
 //мусор
 let trash = [];
@@ -78,16 +78,16 @@ function init() {
     container.appendChild(renderer.domElement);
 
     // добавление света для тестового куба
-    const light = new THREE.DirectionalLight(0xffffff, 0.5);
-    light.position.setScalar(10);
-    scene.add(light);
-    scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+    // const light = new THREE.DirectionalLight(0xffffff, 0.5);
+    // light.position.setScalar(10);
+    // scene.add(light);
+    // scene.add(new THREE.AmbientLight(0xffffff, 0.5));
 
     // Инициализация тестового куба
-    box = new THREE.Mesh(new THREE.BoxGeometry(6, 6, 6), new THREE.MeshLambertMaterial({
-        color: "white"
-    }));
-    scene.add(box);
+    // box = new THREE.Mesh(new THREE.BoxGeometry(6, 6, 6), new THREE.MeshLambertMaterial({
+    //     color: "white"
+    // }));
+    // scene.add(box);
 
     initTrash();
 
@@ -101,8 +101,8 @@ function render() {
     stats.update();
 
     // анимация тестового куба
-    box.rotation.x+=0.005;
-    box.rotation.y+=0.005;
+    // box.rotation.x+=0.005;
+    // box.rotation.y+=0.005;
 
     // анимация мусора
     let timer = Date.now() * 0.00005;
@@ -214,9 +214,11 @@ function loadBackground() {
         bgUrl // спереди
     ];
     const textureCube = new THREE.CubeTextureLoader().load(urls);
+
     textureCube.format = THREE.RGBFormat;
     textureCube.minFilter = THREE.LinearFilter;
     scene.background = textureCube;
+
     return textureCube;
 }
 
