@@ -14,8 +14,7 @@ export default class SubFunctions {
         this.camera = camera;
         this.raycaster = new THREE.Raycaster();
         this.mouse = {x: 0, y: 0};
-        this.cursorOnBubble = false;
-        this.bubbleShake = false;
+        this.bubbleIncreaseNoise = false;
         this.intersects = [];
         this.animControls = {
             step: {step: 0.2, min: 0.5, max: 1.7, animStep: 0.05},
@@ -44,22 +43,34 @@ export default class SubFunctions {
             const limitStep = controls.step + this.animControls.step.step;
             const limitNoise = controls.noiseAmount + this.animControls.noise.step;
 
+            this.bubbleIncreaseNoise = true;
+
             const timer = setInterval(() => {
-                SubFunctions.increaseNoise(controls, {step: limitStep, noise: limitNoise}, timer, this.animControls);
+                const flag = SubFunctions.increaseNoise(controls, {step: limitStep, noise: limitNoise}, this.animControls);
+
+                if(!flag) {
+                    this.bubbleIncreaseNoise = false;
+                    clearInterval(timer);
+                }
             }, this.animControls.intStep)
         };
     }
 
-    static increaseNoise(controls, limit, timer, animControls) {
+    static increaseNoise(controls, limit, animControls) {
         if ((controls.step >= limit.step || controls.step > animControls.step.max) &&
-            (controls.noiseAmount >= limit.noise || controls.noiseAmount > animControls.noise.max)) clearInterval(timer);
+            (controls.noiseAmount >= limit.noise || controls.noiseAmount > animControls.noise.max)) {
+            return false;
+        }
 
         controls.step = controls.step + animControls.step.animStep;
-
         controls.noiseAmount = controls.noiseAmount + animControls.noise.animStep;
+
+        return true;
     }
 
     decreaseNoise(controls) {
+        if(this.bubbleIncreaseNoise) return;
+
         const step = this.animControls.step;
         const noise = this.animControls.noise;
 
