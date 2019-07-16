@@ -15,6 +15,7 @@ export default class SubFunctions {
     this.raycaster = new THREE.Raycaster();
     this.mouse = {x: 0, y: 0};
     this.cursorOnBubble = false;
+    this.bubbleShake = false;
     this.intersects = [];
     this.animControls = {
       step: {max: 1.5, min: 0.5},
@@ -41,7 +42,7 @@ export default class SubFunctions {
 
       if (!this.isIntersect(this.mouse, 'bubble') || controls.bubbleShake) return false;
 
-      controls.bubbleShake = true;
+      this.bubbleShake = true;
 
       const timer = setInterval(() => {
         if (controls.step < this.animControls.step.max) {
@@ -59,7 +60,7 @@ export default class SubFunctions {
               }
             } else {
               clearInterval(timer2);
-              controls.bubbleShake = false;
+              this.bubbleShake = false;
             }
           }, this.animControls.intStep);
         }

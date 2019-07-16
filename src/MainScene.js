@@ -19,8 +19,7 @@ export default class MainScene extends SubFunctions{
     this.controls = {
       noiseAmount: 0.1,
       step: 0.5,
-      coef: 20,
-      bubbleShake: false
+      coef: 20
     };
     this.sphereGeom = null;
   }
