@@ -80,7 +80,7 @@ export default class SubFunctions {
     const textureCube = new THREE.CubeTextureLoader().load(urls);
 
     textureCube.format = THREE.RGBFormat;
-    textureCube.minFilter = THREE.LinearFilter;
+    textureCube.minFilter = THREE.LinearMipMapLinearFilter;
     scene.background = textureCube;
 
     return textureCube;
@@ -113,10 +113,12 @@ export default class SubFunctions {
 
   isIntersect(mouse, name) {
     if (mouse.x === 0 && mouse.y === 0) return false;
-
     this.raycaster.setFromCamera(mouse, this.camera);
+    // console.log(this.scene.children);
     this.intersects = this.raycaster.intersectObjects(this.scene.children,
         true);
+
+    // if (this.intersects.length > 0) console.log(this.intersects[0].point);
 
     return !!this.intersects.length && this.intersects[0].object.name === name;
   }
