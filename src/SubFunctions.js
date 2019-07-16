@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import bgUrl from './assets/sky.jpg';
+// import bgUrl from './assets/sky.jpg';
 import nx from './assets/nx.jpg';
 import ny from './assets/ny.jpg';
 import nz from './assets/nz.jpg';
@@ -16,31 +16,6 @@ export default class SubFunctions {
     this.mouse = {x: 0, y: 0};
     this.cursorOnBubble = false;
     this.intersects = [];
-  }
-
-  initTrash() {
-    const trash = [];
-    const particlesQuantity = 125;// кол-во мусора
-
-    // let particlesTexture= new THREE.TextureLoader().load('public/images/skybox/3.jpg');// текстура для мусора
-    const particlesGeometry = new THREE.SphereGeometry(0.05, 4, 4);
-    const particlesMaterial = new THREE.MeshBasicMaterial({
-      // map: particlesTexture
-    });
-
-    for (let i = 0; i < particlesQuantity; i++) {
-      const mesh = new THREE.Mesh(particlesGeometry, particlesMaterial);
-
-      mesh.position.x = Math.random() * 100;
-      mesh.position.y = Math.random() * 40;
-      mesh.position.z = Math.random() * 70;
-      mesh.scale.x = mesh.scale.y = mesh.scale.z = Math.random() * 3 + 1;
-
-      this.scene.add(mesh);
-      trash.push(mesh);
-    }
-
-    return trash;
   }
 
   onWindowResize() {

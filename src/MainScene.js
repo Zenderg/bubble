@@ -22,7 +22,6 @@ export default class MainScene extends SubFunctions{
       coef: 20,
       bubbleShake: false
     };
-    this.trash = [];
     this.sphereGeom = null;
   }
 
@@ -49,7 +48,6 @@ export default class MainScene extends SubFunctions{
     container.appendChild( this.stats.dom );
 
     container.appendChild(this.renderer.domElement);
-    this.trash = this.initTrash(this.scene);
     this.initEvents(sphere, this.controls);
 
     renderFunc();
@@ -57,16 +55,6 @@ export default class MainScene extends SubFunctions{
 
   render() {
     this.stats.update();
-
-    // анимация мусора
-    const timer = Date.now() * 0.00005;
-    const trashLength = this.trash.length;
-
-    for (let i = 0, il = trashLength; i < il; i++) {
-      const mesh = this.trash[i];
-      mesh.position.x = 50 * Math.cos(timer + i);
-      mesh.position.y = 50 * Math.sin(timer + i * 1.1);
-    }
 
     this.step += this.controls.step;
 
