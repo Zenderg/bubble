@@ -16,6 +16,12 @@ export default class SubFunctions {
     this.mouse = {x: 0, y: 0};
     this.cursorOnBubble = false;
     this.intersects = [];
+    this.animControls = {
+      step: {max: 1.5, min: 0.5},
+      noise: {max: 0.4, min: 0.1},
+      intStep: 10,
+      animStep: 0.05
+    };
   }
 
   onWindowResize() {
@@ -35,36 +41,29 @@ export default class SubFunctions {
 
       if (!this.isIntersect(this.mouse, 'bubble') || controls.bubbleShake) return false;
 
-      const animControls = {
-        step: {max: 1.5, min: 0.5},
-        noise: {max: 0.4, min: 0.1},
-        intStep: 10,
-        animStep: 0.05
-      };
-
       controls.bubbleShake = true;
 
       const timer = setInterval(() => {
-        if (controls.step < animControls.step.max) {
-          controls.step += animControls.animStep;
-          if (controls.noiseAmount < animControls.noise.max) {
-            controls.noiseAmount += animControls.animStep;
+        if (controls.step < this.animControls.step.max) {
+          controls.step += this.animControls.animStep;
+          if (controls.noiseAmount < this.animControls.noise.max) {
+            controls.noiseAmount += this.animControls.animStep;
           }
         } else {
           clearInterval(timer);
           let timer2 = setInterval(() => {
-            if (controls.step > animControls.step.min) {
-              controls.step -= animControls.animStep;
-              if (controls.noiseAmount > animControls.noise.min) {
-                controls.noiseAmount -= animControls.animStep;
+            if (controls.step > this.animControls.step.min) {
+              controls.step -= this.animControls.animStep;
+              if (controls.noiseAmount > this.animControls.noise.min) {
+                controls.noiseAmount -= this.animControls.animStep;
               }
             } else {
               clearInterval(timer2);
               controls.bubbleShake = false;
             }
-          }, animControls.intStep);
+          }, this.animControls.intStep);
         }
-      }, animControls.intStep);
+      }, this.animControls.intStep);
     };
   }
 
