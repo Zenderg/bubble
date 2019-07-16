@@ -55,6 +55,8 @@ export default class MainScene extends SubFunctions{
   render() {
     this.stats.update();
 
+    this.decreaseNoise(this.controls);
+
     this.step += this.controls.step;
 
     this.renderSphereNoise();

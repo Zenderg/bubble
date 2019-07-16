@@ -18,10 +18,9 @@ export default class SubFunctions {
     this.bubbleShake = false;
     this.intersects = [];
     this.animControls = {
-      step: {max: 1.5, min: 0.5},
-      noise: {max: 0.4, min: 0.1},
-      intStep: 10,
-      animStep: 0.05
+      step: {step: 0.5, min: 0.5, max: 1.7, animStep: 0.02},
+      noise: {step: 0.1, min: 0.1, max: 1.7, animStep: 0.005},
+      intStep: 6
     };
   }
 
@@ -40,32 +39,51 @@ export default class SubFunctions {
     return (event) => {
       this.setMousePos(event);
 
-      if (!this.isIntersect(this.mouse, 'bubble') || controls.bubbleShake) return false;
+      if (!this.isIntersect(this.mouse, 'bubble')) return false;
 
-      this.bubbleShake = true;
+      const limitStep = controls.step + this.animControls.step.step;
+      const limitNoise = controls.noiseAmount + this.animControls.noise.step;
 
       const timer = setInterval(() => {
-        if (controls.step < this.animControls.step.max) {
-          controls.step += this.animControls.animStep;
-          if (controls.noiseAmount < this.animControls.noise.max) {
-            controls.noiseAmount += this.animControls.animStep;
-          }
-        } else {
-          clearInterval(timer);
-          let timer2 = setInterval(() => {
-            if (controls.step > this.animControls.step.min) {
-              controls.step -= this.animControls.animStep;
-              if (controls.noiseAmount > this.animControls.noise.min) {
-                controls.noiseAmount -= this.animControls.animStep;
-              }
-            } else {
-              clearInterval(timer2);
-              this.bubbleShake = false;
-            }
-          }, this.animControls.intStep);
-        }
-      }, this.animControls.intStep);
+        SubFunctions.increaseNoise(controls, {step: limitStep, noise: limitNoise}, timer, this.animControls);
+      }, this.animControls.intStep)
     };
+  }
+
+  static increaseNoise(controls, limit, timer, animControls) {
+    if (controls.step >= limit.step && controls.noiseAmount >= limit.noise) clearInterval(timer);
+
+    const infinityStep = !(animControls.step.max > 0);
+    const infinityNoise = !(animControls.noise.max > 0);
+
+    console.log("!");
+
+    if (controls.step < limit.step) {
+      if ((!infinityStep && controls.step < animControls.step.max) || infinityStep){
+        // console.log(controls.step);
+          controls.step = controls.step + animControls.step.animStep
+      }
+    }
+
+    if (controls.noiseAmount < limit.noise) {
+      if ((!infinityNoise && controls.noiseAmount < animControls.noise.max) || infinityNoise){
+        console.log(controls.noiseAmount);
+
+        controls.noiseAmount = controls.noiseAmount + animControls.noise.animStep
+      }
+    }
+  }
+
+  decreaseNoise(controls) {
+    const step = this.animControls.step;
+    const noise = this.animControls.noise;
+
+    if (controls.step <= step.min && controls.noiseAmount <= noise.min) return;
+
+    const decelerationRate = 2;
+
+    controls.step = controls.step > step.min ? controls.step - step.step / decelerationRate : controls.step;
+    controls.noiseAmount = controls.noiseAmount > noise.min ? controls.noiseAmount - noise.step / decelerationRate : controls.noiseAmount;
   }
 
   static loadBackground(scene) {
