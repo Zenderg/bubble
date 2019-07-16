@@ -30,8 +30,10 @@ export default class SubFunctions {
   }
 
   bubbleClick(controls) {
-    return () => {
-      if (!this.intersects.length || controls.bubbleShake) return false;
+    return (event) => {
+      this.setMousePos(event);
+
+      if (!this.isIntersect(this.mouse, 'bubble') || controls.bubbleShake) return false;
 
       const animControls = {
         step: {max: 1.5, min: 0.5},
@@ -98,43 +100,36 @@ export default class SubFunctions {
     });
   }
 
-  onDocumentMouseMove(sphere, controls) {
+  onMouseMove(sphere) {
     return event => {
       const coefEffect = 1;
 
-      this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-      this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+      this.setMousePos(event);
 
       sphere.position.x = -this.mouse.x * coefEffect;
       sphere.position.y = -this.mouse.y * coefEffect;
-
-      this.checkIntersects(controls);
     };
   }
 
-  checkIntersects(controls) {
-    if (this.mouse.x === 0 && this.mouse.y === 0) return false;
+  isIntersect(mouse, name) {
+    if (mouse.x === 0 && mouse.y === 0) return false;
 
-    this.raycaster.setFromCamera(this.mouse, this.camera);
+    this.raycaster.setFromCamera(mouse, this.camera);
     this.intersects = this.raycaster.intersectObjects(this.scene.children,
         true);
 
-    if (this.intersects.length && this.intersects[0].object.name === 'bubble') {
-      if (!this.cursorOnBubble) this.triggerBubbleClickWithCurs(controls);
-    } else {
-      if (this.cursorOnBubble) this.triggerBubbleClickWithCurs(controls);
-    }
+    return !!this.intersects.length && this.intersects[0].object.name === name;
+  }
+
+  setMousePos(event) {
+    this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
   }
 
   initEvents(sphere, controls) {
     window.addEventListener('resize', this.onWindowResize());
     document.addEventListener('click', this.bubbleClick(controls));
     document.addEventListener('mousemove',
-        this.onDocumentMouseMove(sphere, controls));
-  }
-
-  triggerBubbleClickWithCurs(controls) {
-    this.bubbleClick(controls)();
-    this.cursorOnBubble = !this.cursorOnBubble;
+        this.onMouseMove(sphere));
   }
 };
