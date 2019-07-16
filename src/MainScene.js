@@ -61,6 +61,7 @@ export default class MainScene extends SubFunctions{
 
     this.renderSphereNoise();
   }
+
   static addVertexesInArr(sphereGeom) {
     const sphereVerticesArray = [];
     const sphereVerticesNormArray = [];
