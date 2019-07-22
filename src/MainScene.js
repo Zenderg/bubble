@@ -4,14 +4,13 @@ import SimplexNoise from 'simplex-noise';
 import Stats from 'three/examples/jsm/libs/stats.module';
 import './assets/shaders/FresnelShader';
 import Controls from './classes/constrols/Controls'
+import Sphere from './classes/sphere/Sphere';
 
 export default class MainScene {
   constructor(scene, renderer, camera) {
     this.scene = scene;
     this.renderer = renderer;
     this.camera = camera;
-    this.sphereVertices = [];
-    this.sphereVerticesNorm = [];
     this.simplex = new SimplexNoise();
     this.step = 0;
     this.stats = new Stats();
@@ -20,8 +19,6 @@ export default class MainScene {
       step: 0.5,
       coef: 20,
     };
-    this.sphereGeom = new THREE.SphereGeometry(25, 100, 100);
-    this.sphereName = 'bubble';
 
     this.raycaster = new THREE.Raycaster();
     this.mouse = {x: 0, y: 0};
@@ -37,15 +34,10 @@ export default class MainScene {
   init(renderFunc) {
     Controls.setConfig(this.renderer, this.camera);
 
-    [
-      this.sphereVertices,
-      this.sphereVerticesNorm] = MainScene.addVertexesInArr(
-        this.sphereGeom);
-
     // загрузка заднего фона
     const textureCube = Controls.loadBackground(this.scene);
 
-    const sphere = this.createSphere(textureCube);
+    const sphere = new Sphere(this.scene, textureCube).create();
     this.scene.add(sphere);
 
     this.initEvents(sphere, this.controls);
@@ -70,25 +62,6 @@ export default class MainScene {
     this.renderSphereNoise();
   }
 
-  static addVertexesInArr(sphereGeom) {
-    const sphereVerticesArray = [];
-    const sphereVerticesNormArray = [];
-    const verticesLength = sphereGeom.vertices.length;
-
-    for (let i = 0; i < verticesLength; i += 1) {
-      const vertex = sphereGeom.vertices[i];
-      const vec = new THREE.Vector3(vertex.x, vertex.y, vertex.z);
-      sphereVerticesArray.push(vec);
-      let mag = vec.x * vec.x + vec.y * vec.y + vec.z * vec.z;
-      mag = Math.sqrt(mag);
-      const norm = new THREE.Vector3(vertex.x / mag, vertex.y / mag,
-          vertex.z / mag);
-      sphereVerticesNormArray.push(norm);
-    }
-
-    return [sphereVerticesArray, sphereVerticesNormArray];
-  }
-
   renderSphereNoise() {
     const iMax = this.sphereGeom.vertices.length;
 
@@ -111,15 +84,6 @@ export default class MainScene {
     this.sphereGeom.computeVertexNormals();
 
     this.sphereGeom.verticesNeedUpdate = true;
-  }
-
-  createSphere(texture) {
-    const planetMaterial = MainScene.loadShader(texture);
-
-    const sphere = new THREE.Mesh(this.sphereGeom, planetMaterial);
-    sphere.name = 'bubble';
-
-    return sphere;
   }
 
   initEvents(sphere) {
@@ -189,20 +153,6 @@ export default class MainScene {
     this.controls.noiseAmount = this.controls.noiseAmount > noise.min ?
         this.controls.noiseAmount - noise.step / (decelerationRate * 3) :
         this.controls.noiseAmount;
-  }
-
-  static loadShader(texture) {
-    const shader = THREE.FresnelShader;
-    const uniforms = THREE.UniformsUtils.clone(shader.uniforms);
-
-    uniforms['tCube'].value = texture;
-
-    return new THREE.ShaderMaterial({
-      uniforms: uniforms,
-      vertexShader: shader.vertexShader,
-      fragmentShader: shader.fragmentShader,
-      transparent: true,
-    });
   }
 
   isIntersect() {
