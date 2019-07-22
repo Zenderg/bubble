@@ -2,21 +2,21 @@ import * as THREE from 'three';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
 import SimplexNoise from 'simplex-noise';
 import Stats from 'three/examples/jsm/libs/stats.module';
-import './FresnelShader';
-import px from './assets/px.jpg';
-import nx from './assets/nx.jpg';
-import py from './assets/py.jpg';
-import ny from './assets/ny.jpg';
-import pz from './assets/pz.jpg';
-import nz from './assets/nz.jpg';
+import './assets/shaders/FresnelShader';
+import px from './assets/images/px.jpg';
+import nx from './assets/images/nx.jpg';
+import py from './assets/images/py.jpg';
+import ny from './assets/images/ny.jpg';
+import pz from './assets/images/pz.jpg';
+import nz from './assets/images/nz.jpg';
 
 export default class MainScene {
   constructor(scene, renderer, camera) {
     this.scene = scene;
     this.renderer = renderer;
     this.camera = camera;
-    this.sphereVerticesArray = [];
-    this.sphereVerticesNormArray = [];
+    this.sphereVertices = [];
+    this.sphereVerticesNorm = [];
     this.simplex = new SimplexNoise();
     this.step = 0;
     this.stats = new Stats();
@@ -44,8 +44,8 @@ export default class MainScene {
     this.camera.position.set(0, 0, 90);
 
     [
-      this.sphereVerticesArray,
-      this.sphereVerticesNormArray] = MainScene.addVertexesInArr(
+      this.sphereVertices,
+      this.sphereVerticesNorm] = MainScene.addVertexesInArr(
         this.sphereGeom);
 
     // загрузка заднего фона
@@ -105,12 +105,12 @@ export default class MainScene {
           (vertex.x + this.step) / this.controls.coef,
           vertex.y / this.controls.coef, vertex.z / this.controls.coef);
 
-      vertex.x = this.sphereVerticesArray[i].x +
-          this.sphereVerticesNormArray[i].x * value * this.controls.noiseAmount;
-      vertex.y = this.sphereVerticesArray[i].y +
-          this.sphereVerticesNormArray[i].y * value * this.controls.noiseAmount;
-      vertex.z = this.sphereVerticesArray[i].z +
-          this.sphereVerticesNormArray[i].z * value * this.controls.noiseAmount;
+      vertex.x = this.sphereVertices[i].x +
+          this.sphereVerticesNorm[i].x * value * this.controls.noiseAmount;
+      vertex.y = this.sphereVertices[i].y +
+          this.sphereVerticesNorm[i].y * value * this.controls.noiseAmount;
+      vertex.z = this.sphereVertices[i].z +
+          this.sphereVerticesNorm[i].z * value * this.controls.noiseAmount;
     }
 
     this.sphereGeom.computeFaceNormals();
@@ -145,12 +145,12 @@ export default class MainScene {
   };
 
   onMouseMove = sphere => event => {
-      const coefEffect = 1;
+    const coefEffect = 1;
 
-      this.setMousePos(event);
+    this.setMousePos(event);
 
-      sphere.position.x = -this.mouse.x * coefEffect;
-      sphere.position.y = -this.mouse.y * coefEffect;
+    sphere.position.x = -this.mouse.x * coefEffect;
+    sphere.position.y = -this.mouse.y * coefEffect;
   };
 
   bubbleClick = (event) => {
