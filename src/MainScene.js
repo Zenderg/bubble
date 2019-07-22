@@ -3,12 +3,7 @@ import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
 import SimplexNoise from 'simplex-noise';
 import Stats from 'three/examples/jsm/libs/stats.module';
 import './assets/shaders/FresnelShader';
-import px from './assets/images/px.jpg';
-import nx from './assets/images/nx.jpg';
-import py from './assets/images/py.jpg';
-import ny from './assets/images/ny.jpg';
-import pz from './assets/images/pz.jpg';
-import nz from './assets/images/nz.jpg';
+import Controls from './classes/constrols/Controls'
 
 export default class MainScene {
   constructor(scene, renderer, camera) {
@@ -40,8 +35,7 @@ export default class MainScene {
   }
 
   init(renderFunc) {
-    this.renderer.setSize(window.innerWidth, window.innerHeight);
-    this.camera.position.set(0, 0, 90);
+    Controls.setConfig(this.renderer, this.camera);
 
     [
       this.sphereVertices,
@@ -49,19 +43,19 @@ export default class MainScene {
         this.sphereGeom);
 
     // загрузка заднего фона
-    const textureCube = this.loadBackground(this.scene);
+    const textureCube = Controls.loadBackground(this.scene);
 
     const sphere = this.createSphere(textureCube);
     this.scene.add(sphere);
 
     this.initEvents(sphere, this.controls);
 
-    const container = document.getElementById('WebGL-output');
     //Хелперы
     new OrbitControls(this.camera, this.renderer.domElement);
 
-    container.appendChild(this.stats.dom);
-    container.appendChild(this.renderer.domElement);
+    const container = document.getElementById('WebGL-output');
+
+    Controls.append(container, this.stats.dom, this.renderer.domElement);
 
     renderFunc();
   };
@@ -129,20 +123,10 @@ export default class MainScene {
   }
 
   initEvents(sphere) {
-    window.addEventListener('resize', this.onWindowResize);
     document.addEventListener('click', this.bubbleClick);
     document.addEventListener('mousemove',
         this.onMouseMove(sphere));
   }
-
-  onWindowResize = () => {
-    const containerWidth = window.innerWidth;
-    const containerHeight = window.innerHeight;
-
-    this.renderer.setSize(containerWidth, containerHeight);
-    this.camera.aspect = containerWidth / containerHeight;
-    this.camera.updateProjectionMatrix();
-  };
 
   onMouseMove = sphere => event => {
     const coefEffect = 1;
@@ -205,24 +189,6 @@ export default class MainScene {
     this.controls.noiseAmount = this.controls.noiseAmount > noise.min ?
         this.controls.noiseAmount - noise.step / (decelerationRate * 3) :
         this.controls.noiseAmount;
-  }
-
-  loadBackground() {
-    const urls = [
-      px, // слева
-      nx, // справа
-      py, // сверху
-      ny, // снизу
-      pz, // сзади
-      nz, // спереди
-    ];
-    const textureCube = new THREE.CubeTextureLoader().load(urls);
-
-    textureCube.format = THREE.RGBFormat;
-    textureCube.minFilter = THREE.LinearMipMapLinearFilter;
-    this.scene.background = textureCube;
-
-    return textureCube;
   }
 
   static loadShader(texture) {
