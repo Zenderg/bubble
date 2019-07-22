@@ -1,32 +1,27 @@
 import * as THREE from 'three';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
-import SimplexNoise from 'simplex-noise';
 import Stats from 'three/examples/jsm/libs/stats.module';
 import './assets/shaders/FresnelShader';
 import Controls from './classes/constrols/Controls'
 import Sphere from './classes/sphere/Sphere';
 
 export default class MainScene {
+  sphere = null;
+
   constructor(scene, renderer, camera) {
     this.scene = scene;
     this.renderer = renderer;
     this.camera = camera;
-    this.simplex = new SimplexNoise();
     this.step = 0;
     this.stats = new Stats();
-    this.controls = {
-      noiseAmount: 0.1,
-      step: 0.5,
-      coef: 20,
-    };
 
     this.raycaster = new THREE.Raycaster();
     this.mouse = {x: 0, y: 0};
     this.bubbleIncreaseNoise = false;
     this.intersects = [];
     this.animControls = {
-      step: {step: 0.2, min: 0.5, max: 1.7, animStep: 0.05},
-      noise: {step: 0.07, min: 0.1, max: 0.5, animStep: 0.008},
+      step: {speed: 0.2, min: 0.5, max: 1.7, animStep: 0.05},
+      noise: {speed: 0.07, min: 0.1, max: 0.5, animStep: 0.008},
       intStep: 6,
     };
   }
@@ -37,10 +32,10 @@ export default class MainScene {
     // загрузка заднего фона
     const textureCube = Controls.loadBackground(this.scene);
 
-    const sphere = new Sphere(this.scene, textureCube).create();
-    this.scene.add(sphere);
+    this.sphere = new Sphere(textureCube);
+    this.scene.add(this.sphere.create());
 
-    this.initEvents(sphere, this.controls);
+    this.initEvents(this.sphere, this.controls);
 
     //Хелперы
     new OrbitControls(this.camera, this.renderer.domElement);
@@ -57,33 +52,7 @@ export default class MainScene {
 
     this.decreaseNoise(this.controls);
 
-    this.step += this.controls.step;
-
-    this.renderSphereNoise();
-  }
-
-  renderSphereNoise() {
-    const iMax = this.sphereGeom.vertices.length;
-
-    for (let i = 0; i < iMax; i++) {
-      let vertex = this.sphereGeom.vertices[i];
-
-      let value = this.simplex.noise3D(
-          (vertex.x + this.step) / this.controls.coef,
-          vertex.y / this.controls.coef, vertex.z / this.controls.coef);
-
-      vertex.x = this.sphereVertices[i].x +
-          this.sphereVerticesNorm[i].x * value * this.controls.noiseAmount;
-      vertex.y = this.sphereVertices[i].y +
-          this.sphereVerticesNorm[i].y * value * this.controls.noiseAmount;
-      vertex.z = this.sphereVertices[i].z +
-          this.sphereVerticesNorm[i].z * value * this.controls.noiseAmount;
-    }
-
-    this.sphereGeom.computeFaceNormals();
-    this.sphereGeom.computeVertexNormals();
-
-    this.sphereGeom.verticesNeedUpdate = true;
+    this.sphere.render();
   }
 
   initEvents(sphere) {
@@ -106,13 +75,13 @@ export default class MainScene {
 
     if (!this.isIntersect(this.mouse, 'bubble')) return false;
 
-    const limitStep = this.controls.step + this.animControls.step.step;
+    const limitStep = this.controls.speed + this.animControls.step.step;
     const limitNoise = this.controls.noiseAmount + this.animControls.noise.step;
 
     this.bubbleIncreaseNoise = true;
 
     const timer = setInterval(() => {
-      const flag = this.increaseNoise({step: limitStep, noise: limitNoise});
+      const flag = this.increaseNoise({speed: limitStep, noise: limitNoise});
 
       if (!flag) {
         this.bubbleIncreaseNoise = false;
@@ -122,14 +91,14 @@ export default class MainScene {
   };
 
   increaseNoise(limit) {
-    if ((this.controls.step >= limit.step || this.controls.step >
+    if ((this.controls.speed >= limit.speed || this.controls.speed >
         this.animControls.step.max) &&
         (this.controls.noiseAmount >= limit.noise || this.controls.noiseAmount >
             this.animControls.noise.max)) {
       return false;
     }
 
-    this.controls.step = this.controls.step + this.animControls.step.animStep;
+    this.controls.speed = this.controls.speed + this.animControls.step.animStep;
     this.controls.noiseAmount = this.controls.noiseAmount +
         this.animControls.noise.animStep;
 
@@ -142,14 +111,14 @@ export default class MainScene {
     const step = this.animControls.step;
     const noise = this.animControls.noise;
 
-    if (this.controls.step <= step.min && this.controls.noiseAmount <=
+    if (this.controls.speed <= step.min && this.controls.noiseAmount <=
         noise.min) return;
 
     const decelerationRate = 10;
 
-    this.controls.step = this.controls.step > step.min ?
-        this.controls.step - step.step / decelerationRate :
-        this.controls.step;
+    this.controls.speed = this.controls.speed > step.min ?
+        this.controls.speed - step.step / decelerationRate :
+        this.controls.speed;
     this.controls.noiseAmount = this.controls.noiseAmount > noise.min ?
         this.controls.noiseAmount - noise.step / (decelerationRate * 3) :
         this.controls.noiseAmount;
