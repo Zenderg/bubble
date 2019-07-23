@@ -90,21 +90,6 @@ export default class MainScene {
     }, this.animControls.intStep);
   };
 
-  increaseNoise(limit) {
-    if ((this.controls.speed >= limit.speed || this.controls.speed >
-        this.animControls.step.max) &&
-        (this.controls.noiseAmount >= limit.noise || this.controls.noiseAmount >
-            this.animControls.noise.max)) {
-      return false;
-    }
-
-    this.controls.speed = this.controls.speed + this.animControls.step.animStep;
-    this.controls.noiseAmount = this.controls.noiseAmount +
-        this.animControls.noise.animStep;
-
-    return true;
-  }
-
   decreaseNoise() {
     if (this.bubbleIncreaseNoise) return;
 
