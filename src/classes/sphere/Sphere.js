@@ -1,14 +1,16 @@
 import * as THREE from 'three';
 import SimplexNoise from "simplex-noise";
-import Actions from "./Actions";
+import {decreaseNoise} from "./Actions";
+import Events from "./Events";
 
 export default class Sphere {
   sphereVertices = [];
   sphereVerticesNorm = [];
-  sphere = null;
   sphereName = 'bubble';
   sphereGeom = new THREE.SphereGeometry(25, 100, 100);
   simplex = new SimplexNoise();
+  bubbleIncreaseNoise = false;
+
   controls = {
     noiseAmount: 0.1,
     speed: 0.5,
@@ -16,8 +18,10 @@ export default class Sphere {
   };
   step = 0;// каждый раз прибавляет к себе скорость, нужно для создания шумов
 
-  constructor(texture) {
+  constructor(scene, camera, texture) {
     this.texture = texture;
+    this.scene = scene;
+    this.camera = camera;
   }
 
   create() {
@@ -27,6 +31,8 @@ export default class Sphere {
 
     const sphere = new THREE.Mesh(this.sphereGeom, planetMaterial);
     sphere.name = this.sphereName;
+
+    Events.init(this.scene, this.camera, sphere, this.sphereName, this.controls);
 
     return sphere;
   }
@@ -48,12 +54,12 @@ export default class Sphere {
   render() {
     this.updateNoises();
 
+    decreaseNoise(this.controls);
+
     this.sphereGeom.computeFaceNormals();
     this.sphereGeom.computeVertexNormals();
 
     this.sphereGeom.verticesNeedUpdate = true;
-
-    Actions.d
   }
 
   static addVertexes(sphereGeom) {
@@ -87,7 +93,7 @@ export default class Sphere {
     const z = vertexSphere.z +
         vertexNorm.z * value * this.controls.noiseAmount;
 
-    return {x, y, z};
+    return new THREE.Vector3(x, y, z);
   }
 
   updateNoises() {
@@ -96,8 +102,7 @@ export default class Sphere {
     const iMax = this.sphereGeom.vertices.length;
 
     for (let i = 0; i < iMax; i++) {
-      let vertexGeom = this.sphereGeom.vertices[i];
-      vertexGeom = this.newVertex(vertexGeom, this.sphereVerticesNorm[i], this.sphereVertices[i]);
+      this.sphereGeom.vertices[i] = this.newVertex(this.sphereGeom.vertices[i], this.sphereVerticesNorm[i], this.sphereVertices[i]);
     }
   }
 }

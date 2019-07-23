@@ -1,7 +1,7 @@
-import Resize from './events/Resize';
+import resize from './events/resize';
 
 export default class Events {
   static init(renderer, camera) {
-    window.addEventListener('resize', Resize.event(renderer, camera))
+    window.addEventListener('resize', resize(renderer, camera))
   }
 }

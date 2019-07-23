@@ -1,5 +1,9 @@
+import click from './events/click';
+import mousemove from './events/mousemove';
+
 export default class Events {
-  static init(renderer, camera) {
-    document.addEventListener('click', Click.event())
+  static init(scene, camera, sphere, name, controls) {
+    document.addEventListener('click', click(scene, camera, name, controls));
+    document.addEventListener('mousemove', mousemove(sphere))
   }
 }

@@ -1,19 +1,19 @@
 let bubbleIncreaseNoise = false;
 const animControls = {
-  speed: {step: 0.2, min: 0.5, max: 1.7, animStep: 0.05},
-  noise: {step: 0.07, min: 0.1, max: 0.5, animStep: 0.008},
-  intStep: 6,
+    speed: {step: 0.2, min: 0.5, max: 1.7, animStep: 0.05},
+    noise: {step: 0.07, min: 0.1, max: 0.5, animStep: 0.008},
+    intStep: 6,
 };
 
 const increaseNoise = (controls, limit) => {
   if ((controls.speed >= limit.speed || controls.speed >
-      animControls.step.max) &&
-      (noiseAmount >= limit.noise || controls.noiseAmount >
+      animControls.speed.max) &&
+      (controls.noiseAmount >= limit.noise || controls.noiseAmount >
           animControls.noise.max)) {
     return false;
   }
 
-  controls.speed = controls.speed + animControls.step.animStep;
+  controls.speed = controls.speed + animControls.speed.animStep;
   controls.noiseAmount = controls.noiseAmount +
       animControls.noise.animStep;
 
@@ -39,4 +39,10 @@ const decreaseNoise = controls => {
       controls.noiseAmount;
 };
 
-export default {increaseNoise, decreaseNoise};
+const setFlag = val => {
+    bubbleIncreaseNoise = val;
+};
+
+const getAnimControls = () => animControls;
+
+export {increaseNoise, decreaseNoise, setFlag, getAnimControls};
