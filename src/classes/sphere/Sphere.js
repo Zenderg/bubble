@@ -1,7 +1,7 @@
 import * as THREE from 'three';
-import SimplexNoise from "simplex-noise";
-import {decreaseNoise} from "./Actions";
-import Events from "./Events";
+import SimplexNoise from 'simplex-noise';
+import Actions from './Actions';
+import Events from './Events';
 
 export default class Sphere {
   sphereVertices = [];
@@ -10,12 +10,12 @@ export default class Sphere {
   sphereGeom = new THREE.SphereGeometry(25, 100, 100);
   simplex = new SimplexNoise();
   bubbleIncreaseNoise = false;
-
   controls = {
     noiseAmount: 0.1,
     speed: 0.5,
     coef: 20,
   };
+  actions = new Actions(this.controls);
   step = 0;// каждый раз прибавляет к себе скорость, нужно для создания шумов
 
   constructor(scene, camera, texture) {
@@ -27,14 +27,26 @@ export default class Sphere {
   create() {
     const planetMaterial = Sphere.loadShader(this.texture);
 
-    [this.sphereVertices, this.sphereVerticesNorm] = Sphere.addVertexes(this.sphereGeom);
+    [this.sphereVertices, this.sphereVerticesNorm] = Sphere.addVertexes(
+        this.sphereGeom);
 
     const sphere = new THREE.Mesh(this.sphereGeom, planetMaterial);
     sphere.name = this.sphereName;
 
-    Events.init(this.scene, this.camera, sphere, this.sphereName, this.controls);
+    Events.init(this.scene, this.camera, sphere, this.sphereName, this.actions);
 
     return sphere;
+  }
+
+  render() {
+    this.updateNoises();
+
+    this.actions.update();
+
+    this.sphereGeom.computeFaceNormals();
+    this.sphereGeom.computeVertexNormals();
+
+    this.sphereGeom.verticesNeedUpdate = true;
   }
 
   static loadShader(texture) {
@@ -49,17 +61,6 @@ export default class Sphere {
       fragmentShader: shader.fragmentShader,
       transparent: true,
     });
-  }
-
-  render() {
-    this.updateNoises();
-
-    decreaseNoise(this.controls);
-
-    this.sphereGeom.computeFaceNormals();
-    this.sphereGeom.computeVertexNormals();
-
-    this.sphereGeom.verticesNeedUpdate = true;
   }
 
   static addVertexes(sphereGeom) {
@@ -102,7 +103,8 @@ export default class Sphere {
     const iMax = this.sphereGeom.vertices.length;
 
     for (let i = 0; i < iMax; i++) {
-      this.sphereGeom.vertices[i] = this.newVertex(this.sphereGeom.vertices[i], this.sphereVerticesNorm[i], this.sphereVertices[i]);
+      this.sphereGeom.vertices[i] = this.newVertex(this.sphereGeom.vertices[i],
+          this.sphereVerticesNorm[i], this.sphereVertices[i]);
     }
   }
 }

@@ -1,23 +1,18 @@
 import {isIntersect} from '../helpers';
-import {increaseNoise, setFlag, getAnimControls} from '../Actions';
 
-const event = (scene, camera, name, controls) => event => {
-    if (!isIntersect(scene, camera, event, name)) return false;
+let timer = null;
 
-    const animControls = getAnimControls();
-    const limitSpeed = controls.speed + animControls.speed.step;
-    const limitNoise = controls.noiseAmount + animControls.noise.step;
+const event = (scene, camera, name, actions) => event => {
+  if (!isIntersect(scene, camera, event, name)) return false;
 
-    setFlag(true);
+  actions.state = 'increase';
 
-    const timer = setInterval(() => {
-        const flag = increaseNoise(controls, {speed: limitSpeed, noise: limitNoise});
+  if (timer) {
+    clearTimeout(timer);
+    timer = null;
+  }
 
-        if (!flag) {
-            setFlag('decrease');
-            clearInterval(timer);
-        }
-    }, animControls.intStep);
+  timer = setTimeout(() => actions.state = 'decrease', 200);
 };
 
 export default event;

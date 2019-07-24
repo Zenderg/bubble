@@ -1,48 +1,62 @@
-let bubbleNoiseState = 'normal';
-const animControls = {
-    speed: {step: 0.2, min: 0.5, max: 1.7, animStep: 0.05},
-    noise: {step: 0.07, min: 0.1, max: 0.5, animStep: 0.008},
-    intStep: 6,
-};
+export default class Actions {
+  bubbleState = 'normal';
+  animControls = {
+    speed: {min: 0.5, max: 1.7, step: 0.05},
+    noise: {min: 0.1, max: 0.5, step: 0.005},
+  };
 
-const increaseNoise = (controls, limit) => {
-  if ((controls.speed >= limit.speed || controls.speed >
-      animControls.speed.max) &&
-      (controls.noiseAmount >= limit.noise || controls.noiseAmount >
-          animControls.noise.max)) {
-    return false;
+  constructor(controls) {
+    this.controls = controls;
+    this.actions = {
+      normal: () => {
+      },
+      increase: this.increaseNoise,
+      decrease: this.decreaseNoise,
+    };
   }
 
-  controls.speed = controls.speed + animControls.speed.animStep;
-  controls.noiseAmount = controls.noiseAmount +
-      animControls.noise.animStep;
+  update() {
+    this.actions[this.bubbleState].call(this);
+  }
 
-  return true;
-};
+  increaseNoise() {
+    const speed = this.animControls.speed;
+    const noise = this.animControls.noise;
 
-const decreaseNoise = controls => {
-  if (bubbleNoiseState !== 'decrease') return;
+    if (this.controls.speed >= speed.max &&
+        this.controls.noiseAmount >= noise.max)
+      return this.state = 'decrease';
 
-  console.log("!");
+    this.controls.speed = this.controls.speed < speed.max ?
+        this.controls.speed + speed.step :
+        this.controls.speed;
+    this.controls.noiseAmount = this.controls.noiseAmount < noise.max ?
+        this.controls.noiseAmount + noise.step :
+        this.controls.noiseAmount;
+  }
 
-  const step = animControls.speed;
-  const noise = animControls.noise;
+  decreaseNoise() {
+    const speed = this.animControls.speed;
+    const noise = this.animControls.noise;
 
-  if (controls.speed <= step.min && controls.noiseAmount <=
-      noise.min) return setFlag('normal');
+    if (this.controls.speed <= speed.min && this.controls.noiseAmount <=
+        noise.min) return this.state = 'normal';
 
-  const decelerationRate = 10;
+    const decelerationRate = 3;
 
-  controls.speed = controls.speed > step.min ?
-      controls.speed - step.step / decelerationRate :
-      controls.speed;
-  controls.noiseAmount = controls.noiseAmount > noise.min ?
-      controls.noiseAmount - noise.step / (decelerationRate * 3) :
-      controls.noiseAmount;
-};
+    this.controls.speed = this.controls.speed > speed.min ?
+        this.controls.speed - speed.step / decelerationRate :
+        this.controls.speed;
+    this.controls.noiseAmount = this.controls.noiseAmount > noise.min ?
+        this.controls.noiseAmount - noise.step / decelerationRate :
+        this.controls.noiseAmount;
+  }
 
-const setFlag = val => bubbleNoiseState = val;
+  set state(val) {
+    this.bubbleState = val;
+  }
 
-const getAnimControls = () => animControls;
-
-export {increaseNoise, decreaseNoise, setFlag, getAnimControls};
+  get state() {
+    return this.bubbleState;
+  }
+}
