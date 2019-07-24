@@ -59,4 +59,8 @@ export default class Actions {
   get state() {
     return this.bubbleState;
   }
+
+  set anims(obj){
+    this.animControls = {...this.animControls, ...obj}
+  }
 }
