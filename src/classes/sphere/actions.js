@@ -1,4 +1,4 @@
-let bubbleIncreaseNoise = false;
+let bubbleNoiseState = 'normal';
 const animControls = {
     speed: {step: 0.2, min: 0.5, max: 1.7, animStep: 0.05},
     noise: {step: 0.07, min: 0.1, max: 0.5, animStep: 0.008},
@@ -21,13 +21,15 @@ const increaseNoise = (controls, limit) => {
 };
 
 const decreaseNoise = controls => {
-  if (bubbleIncreaseNoise) return;
+  if (bubbleNoiseState !== 'decrease') return;
+
+  console.log("!");
 
   const step = animControls.speed;
   const noise = animControls.noise;
 
   if (controls.speed <= step.min && controls.noiseAmount <=
-      noise.min) return;
+      noise.min) return setFlag('normal');
 
   const decelerationRate = 10;
 
@@ -39,9 +41,7 @@ const decreaseNoise = controls => {
       controls.noiseAmount;
 };
 
-const setFlag = val => {
-    bubbleIncreaseNoise = val;
-};
+const setFlag = val => bubbleNoiseState = val;
 
 const getAnimControls = () => animControls;
 

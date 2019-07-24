@@ -14,7 +14,7 @@ const event = (scene, camera, name, controls) => event => {
         const flag = increaseNoise(controls, {speed: limitSpeed, noise: limitNoise});
 
         if (!flag) {
-             setFlag(false);
+            setFlag('decrease');
             clearInterval(timer);
         }
     }, animControls.intStep);
