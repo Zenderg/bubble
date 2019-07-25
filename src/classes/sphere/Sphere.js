@@ -33,7 +33,7 @@ export default class Sphere {
     const sphere = new THREE.Mesh(this.sphereGeom, planetMaterial);
     sphere.name = this.sphereName;
 
-    Events.init(this.scene, this.camera, sphere, this.sphereName, this.actions, this.controls);
+    Events.init(this.scene, this.camera, sphere, this.sphereName, this.actions);
 
     return sphere;
   }
