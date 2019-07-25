@@ -1,4 +1,3 @@
-import * as THREE from 'three';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
 import Stats from 'three/examples/jsm/libs/stats.module';
 import './assets/shaders/FresnelShader';
@@ -25,7 +24,8 @@ export default class MainScene {
     this.scene.add(this.sphere.create());
 
     //Хелперы
-    new OrbitControls(this.camera, this.renderer.domElement);
+    const orbit = new OrbitControls(this.camera, this.renderer.domElement);
+    orbit.enableZoom = false;
 
     const container = document.getElementById('WebGL-output');
 
