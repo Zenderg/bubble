@@ -26,9 +26,9 @@ export default class Actions {
     const speedCnl = this.controls.speed;
     const noiseCnl = this.controls.noiseAmount;
 
-    if (speedCnl >= speed.max &&
-        noiseCnl >= noise.max)
+    if (speedCnl >= speed.max && noiseCnl >= noise.max) {
       return this.state = 'decrease';
+    }
 
     this.controls.speed = speedCnl < speedLimit
         ? speedCnl + speed.step
@@ -44,8 +44,9 @@ export default class Actions {
     const speedCnl = this.controls.speed;
     const noiseCnl = this.controls.noiseAmount;
 
-    if (speedCnl <= speed.min && noiseCnl <=
-        noise.min) return this.state = 'normal';
+    if (speedCnl <= speed.min && noiseCnl <= noise.min) {
+      return this.state = 'normal';
+    }
 
     const decelerationRate = 3;
 
@@ -72,15 +73,6 @@ export default class Actions {
     }
   }
 
-  // changeNoiseMin() {
-  //   this.controls.speed = speedCnl > speed.min ?
-  //       speedCnl - speed.step / decelerationRate :
-  //       speedCnl;
-  //   this.controls.noiseAmount = noiseCnl > noise.min ?
-  //       noiseCnl - noise.step / decelerationRate :
-  //       noiseCnl;
-  // }
-
   set state(val) {
     this.bubbleState = val;
   }
@@ -92,7 +84,6 @@ export default class Actions {
   set anims(obj){
     this.animControls.speed = {...this.animControls.speed, ...obj.speed};
     this.animControls.noise = {...this.animControls.noise, ...obj.noise};
-    // console.log(this.animControls, obj, {...this.animControls.speed, ...obj.speed});
   }
 
   get anims(){
