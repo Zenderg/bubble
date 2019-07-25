@@ -1,5 +1,5 @@
 export default class Actions {
-  bubbleState = 'normal';
+  state = 'normal';
   animControls = {
     speed: {min: 0.5, max: 1.7, step: 0.05},
     noise: {min: 0.1, max: 0.5, step: 0.005},
@@ -17,7 +17,7 @@ export default class Actions {
   }
 
   update() {
-    this.actions[this.bubbleState].call(this);
+    this.actions[this.state].call(this);
   }
 
   increaseNoise(speedLimit = this.animControls.speed.max, noiseLimit = this.animControls.noise.max) {
@@ -69,16 +69,8 @@ export default class Actions {
     } else if(speedCnl > speed.min && noiseCnl > noise.min) {
       this.decreaseNoise();
     } else {
-      this.bubbleState = 'normal';
+      this.state = 'normal';
     }
-  }
-
-  set state(val) {
-    this.bubbleState = val;
-  }
-
-  get state() {
-    return this.bubbleState;
   }
 
   set anims(obj){
