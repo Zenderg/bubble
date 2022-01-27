@@ -24,6 +24,6 @@
   },
   "dependencies": {
     "simplex-noise": "^2.4.0",
-    "three": "^0.106.2"
+    "three": "^0.137.0"
   }
 }
