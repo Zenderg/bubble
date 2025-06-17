@@ -7,16 +7,8 @@
     "dev": "parcel src/index.html --open",
     "build": "parcel build src/index.html"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Zenderg/bubble.git"
-  },
   "author": "",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/Zenderg/bubble/issues"
-  },
-  "homepage": "https://github.com/Zenderg/bubble#readme",
   "devDependencies": {
     "@babel/core": "^7.5.5",
     "@babel/plugin-proposal-class-properties": "^7.5.5",
